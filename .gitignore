@@ -1,0 +1,96 @@
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Uncomment if you have an msbuild file
+# *.builds
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NUNIT
+*.VisualState.xml
+TestResult.xml
+
+# Build Results of an ATL Project
+[Dd]ebugPS/
+[Rr]eleasePS/
+dlldata.c
+
+# Compiled source files
+*.com
+*.dll
+*.exe
+*.pdb
+*.ilk
+*.obj
+*.lib
+*.so
+*.dylib
+*.class
+*.cache
+*.csproj.FileListAbsolute.txt
+
+# Store files generated as part of a build
+*.csproj.user
+*.csproj.DotSettings.user
+
+# Generated files
+*.g.cs
+*.g.i.cs
+*.designer.cs
+*.dbmdl
+.g.
+*.sfproj.FileListAbsolute.txt
+
+# Visual Studio Code settings
+.vscode/
+
+# Packages folder
+packages/
+*.nupkg
+*.nuspec
+
+# MacOS-specific files
+.DS_Store
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Project-specific files
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Visual Studio 2019 cache
+.vs/
