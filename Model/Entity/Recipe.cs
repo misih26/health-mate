@@ -7,7 +7,7 @@ namespace Model.Entity
     public class Recipe
     {
         [Key]
-        public string Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         [StringLength(50)]
         public string Name { get; set; }

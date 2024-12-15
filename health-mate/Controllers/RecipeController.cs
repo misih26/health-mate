@@ -36,7 +36,7 @@ namespace health_mate.Controllers
 
         [HttpPut]
         [Authorize(Roles = "admin")]
-        public SuccessDTO Update(RecipeModificationDTO recipeModificationDTO)
+        public SuccessDTO Update([FromBody] RecipeModificationDTO recipeModificationDTO)
         {
             return RecipeLogic.Modify(recipeModificationDTO);
         }
