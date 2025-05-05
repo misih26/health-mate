@@ -34,6 +34,8 @@ namespace health_mate
             builder.Services.AddTransient<RecipeLogic>();
             builder.Services.AddTransient<CategoryLogic>();
             builder.Services.AddTransient<UserLogic>();
+
+
             // Add services to the container.
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -74,6 +76,7 @@ namespace health_mate
 
             app.MapControllers();
 
+            app.UseCors(x=>x.AllowCredentials().AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:4200"));
             app.Run();
         }
     }
