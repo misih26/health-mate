@@ -35,14 +35,14 @@ namespace health_mate.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "admin")]
+       // [Authorize(Roles = "admin")]
         public SuccessDTO Update([FromBody] CategoryModificationDTO categoryModificationDto)
         {
             return categoryLogic.Modify(categoryModificationDto);
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "admin")]
+       // [Authorize(Roles = "admin")]
         public SuccessDTO Delete(string id)
         {
             return categoryLogic.Remove(id);
