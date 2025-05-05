@@ -1,4 +1,18 @@
-
-<ul> 
-    <li></li>
-</ul>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Név:</th>
+            <th>Azonositó:</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let category of categories">
+            <td>{{category.name}}</td>
+            <td>{{category.id}}</td>
+            <td><a [href]="'/category-modify/'+category.id">modositas</a></td>
+            <td><button (click)="delete(category.id)">Törlés</button></td>
+        </tr>
+    </tbody>
+</table>
