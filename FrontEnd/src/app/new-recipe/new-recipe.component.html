@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Új recept hozzáadása</h1>
+    <label class="mt-2">Recept neve:</label>
+    <input type="text" class="form-control" [(ngModel)]="title">
+    <label class="mt-2">Recept leírása:</label>
+    <textarea class="form-control" [(ngModel)]="description"></textarea>
+    <label class="mt-2">Kategória:</label>
+    <select class="form-control" [(ngModel)]="category">
+        <option *ngFor="let category of categories" [value]="category.id">{{category.name}}</option>
+    </select>
+    <input type="button" value="Add" class="btn btn-success mt-2" (click)="saveNewRecipes()">
+</body>
+</html>
