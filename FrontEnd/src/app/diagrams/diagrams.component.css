@@ -11,10 +11,16 @@
 
 #flex-container div {
     border: 1px solid black;
+    min-height: 23px;
+    padding-left: 3px;
+    padding-right: 3px;
+    font-weight: bold;
+
+
 
 }
 
-.legend{
+.legend {
     width: 20px;
     height: 20px;
     display: inline-block;

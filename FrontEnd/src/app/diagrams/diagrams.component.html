@@ -1,6 +1,7 @@
 <div id="flex-container">
     <div *ngFor="let category of categories" [style.height.%]="columnHeight(category.recipes.length)"
-        [style.background-color]="randomColor()">&nbsp;&nbsp;</div>
+        [style.background-color]="randomColor()">{{category.recipes.length}}</div>
+
 </div>
 <div class="text-center">
     @for (category of categories; track category.id; let idx=$index){
