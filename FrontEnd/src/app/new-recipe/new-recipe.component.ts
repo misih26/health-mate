@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormsModule } from '@angular/forms';
+import { RecipeService } from '../services/recipe.service';
+import { CategoryService } from '../services/category.service';
 
 @Component({
   selector: 'app-new-recipe',
@@ -13,27 +15,20 @@ export class NewRecipeComponent implements OnInit {
   description: string = "";
   category: string = "";
   categories: any[] = [];
+  constructor(private recipeService: RecipeService, private categoryService: CategoryService) {
+  }
 
   ngOnInit(): void {
-    fetch("https://localhost:7165/Category")
-      .then(response => response.json())
-      .then(parsedResponse => this.categories = parsedResponse)
+    this.categoryService.getAllCategory()
+      .subscribe(resp => this.categories = resp)
   }
-  saveNewRecipes(): void{
-    let newRecipes={
-      name:this.title,
-      description:this.description,
-      categoryId:this.category
+  saveNewRecipes(): void {
+    let newRecipes = {
+      name: this.title,
+      description: this.description,
+      categoryId: this.category
     }
-    let options={
-      method:"post",
-      body:JSON.stringify(newRecipes),
-      headers:{
-        "Content-Type":"application/json"
-      }
-    }
-    fetch("https://localhost:7165/Recipe", options)
-    .then(data=>data.json())
-    .then(response=>alert("Sikeres mentés"))
+    this.recipeService.saveNewRecipe(newRecipes)
+      .subscribe(resp => alert("SIkerres mentés"))
   }
 }
