@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Meta } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import { CategoryService } from '../services/category.service';
 
 @Component({
   selector: 'app-category-modify',
@@ -10,36 +11,28 @@ import { ActivatedRoute } from '@angular/router';
   styleUrl: './category-modify.component.css'
 })
 export class CategoryModifyComponent implements OnInit {
-  categoryId: string ="";
+  categoryId: string = "";
   category: any;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private categoryService: CategoryService) { }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params=>this.categoryId=params.get("id")+"")
-    fetch("https://localhost:7165/Category/"+this.categoryId)
-    .then(response=>response.json())
-    .then(parsed=>this.category=parsed)
+
+    this.route.paramMap.subscribe(params => this.categoryId = params.get("id") + "")
+    this.categoryService.getCategoryById(this.categoryId)
+      .subscribe(resp => this.category = resp)
   }
-  categoryModify(){
-    if(this.category.recipes){
+
+  categoryModify() {
+    if (this.category.recipes) {
       delete this.category.recipes
     }
-    const options = {
-      method: "PUT",
-      body: JSON.stringify(this.category),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }
-    fetch("https://localhost:7165/Category", options)
-    .then(response=> response.json())
-    .then(parsed=>{
-      if(parsed.success){
+    this.categoryService.modifyCategory(this.category)
+      .subscribe(parsed => {
+        if (parsed.success) {
           alert("sikeres modify")
-      }
-    })
-    console.log(this.category);
+        }
+      })
   }
 
 }
