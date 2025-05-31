@@ -26,6 +26,11 @@ namespace Logic
             return categoryMapper.Map(Repository.GetCategoryById(id));
         }
 
+        public CategoryDTO GetByName(string name)
+        {
+            return categoryMapper.Map(Repository.GetCategoryByName(name));
+        }
+
         public SuccessDTO Remove(string id)
         {
             Repository.DeleteCategory(id);
