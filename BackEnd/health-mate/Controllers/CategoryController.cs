@@ -28,6 +28,12 @@ namespace health_mate.Controllers
             return categoryLogic.GetById(id);
         }
 
+        [HttpGet("ByName/{name}")]
+        public CategoryDTO GetName(string name)
+        {
+            return categoryLogic.GetByName(name);
+        }
+
         [HttpPost]
         public SuccessDTO Add([FromBody] CategoryCreationDTO categoryCreationDto)
         {
