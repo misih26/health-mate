@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { CategoryService } from '../services/category.service';
 
 @Component({
   selector: 'app-diagrams',
@@ -11,6 +12,9 @@ export class DiagramsComponent implements OnInit {
   categories: any[] = [];
   sum: number = 0;
   columnColors: string[] = [];
+  constructor(private categoryService: CategoryService) {
+
+  }
   randomColor(): string {
     let randomegy: Number = Math.floor(Math.random() * 155) + 100
     let randomketto: Number = Math.floor(Math.random() * 155) + 100
@@ -24,14 +28,13 @@ export class DiagramsComponent implements OnInit {
     return Math.ceil(list / this.sum * 100);
   }
   ngOnInit(): void {
-    fetch("https://localhost:7165/Category")
-      .then(response => response.json())
-      .then(parsed => {
-        this.categories = parsed;
+    this.categoryService.getAllCategory()
+      .subscribe(resp => {
+        this.categories = resp;
         for (let item of this.categories) {
           this.sum += item.recipes.length
         }
-      });
+      })
   }
 
 }
