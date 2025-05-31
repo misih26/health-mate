@@ -42,7 +42,7 @@ namespace health_mate.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "admin")]
+        //[Authorize(Roles = "admin")]
         public SuccessDTO Delete(string id)
         {
             return RecipeLogic.Remove(id);
