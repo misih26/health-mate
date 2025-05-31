@@ -9,9 +9,16 @@ import { Observable } from 'rxjs';
 export class RecipeService {
 
   private url="https://localhost:7165/Category"
+  private recipeUrl="https://localhost:7165/Recipe"
   constructor(private client: HttpClient) { }
 
-  getRecipesByCategory(id: string):Observable<any>{
-    return this.client.get(this.url+"/"+id)
+  getRecipesByCategory(name: string):Observable<any>{
+    return this.client.get(this.url+"/ByName/"+name)
+  }
+  getAllRecipes():Observable<any>{
+    return this.client.get(this.recipeUrl)
+  }
+  saveNewRecipe(newRecipe: any){
+    return this.client.post(this.recipeUrl, newRecipe)
   }
 }
