@@ -1,30 +1,27 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CategoryService } from '../services/category.service';
 
 @Component({
   selector: 'app-new-category',
   imports: [FormsModule,
-
   ],
   templateUrl: './new-category.component.html',
   styleUrl: './new-category.component.css'
 })
 export class NewCategoryComponent {
-category: string = "";
-saveNewCategory(): void{
-  let newRecipes={
-    name:this.category,
+  category: string = "";
+  constructor(private categoryService: CategoryService) {
+
   }
-  let options={
-    method:"post",
-    body:JSON.stringify(newRecipes),
-    headers:{
-      "Content-Type":"application/json"
+
+  saveNewCategory(): void {
+    let newCategory = {
+      name: this.category,
     }
+    this.categoryService.newCategory(newCategory)
+      .subscribe(resp => newCategory = resp)
+
   }
-  fetch("https://localhost:7165/Category", options)
-  .then(data=>data.json())
-  .then(response=>alert("Sikeres mentés"))
-}
 }
 
