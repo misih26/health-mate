@@ -51,5 +51,10 @@ namespace Model.Repository
         {
             return HealthMateDbContext.Category.FirstOrDefault(c => c.Id == id);
         }
+
+        public Category GetCategoryByName(string name)
+        {
+            return HealthMateDbContext.Category.FirstOrDefault(c => c.Name == name);
+        }
     }
 }
