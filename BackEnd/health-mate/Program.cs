@@ -17,9 +17,23 @@ namespace health_mate
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // --- TANÁRI KIEGÉSZÍTÉS: Kestrel port beállítása ---
+            // Ez teszi lehetõvé, hogy a szerveren az appsettings.json-ben megadott porton fusson az app.
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                // Beolvassuk a portot, ha nincs megadva, alapértelmezett a 5000
+                var port = builder.Configuration["settings:port"] ?? "5000";
+                options.ListenAnyIP(int.Parse(port));
+            });
+
+            // 1. Kapcsolati karakterlánc beolvasása a "db" szekcióból
+            var connectionString = builder.Configuration.GetSection("db")["conn"];
+
             builder.Services.AddDbContext<HealthMateDbContext>(options =>
             {
-                options.UseMySql("server=localhost;port=3306;database=health_mate;user=root;password=root;", new MySqlServerVersion(new Version(8,4,3)));
+                // A MySQL beállítása a beolvasott stringgel
+                //options.UseMySql("server=localhost;port=3306;database=health_mate;user=root;password=root;", new MySqlServerVersion(new Version(8,4,3)));
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
                 options.UseLazyLoadingProxies();
                 options.EnableSensitiveDataLogging();
             });
@@ -68,15 +82,23 @@ namespace health_mate
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseDeveloperExceptionPage();
 
             app.UseAuthorization();
 
 
-            app.MapControllers();
+            
+            // 2. A frontend URL beolvasása a "settings" szekcióból a CORS-hoz
+            var frontendUrl = app.Configuration.GetSection("settings")["frontend"];
 
-            app.UseCors(x=>x.AllowCredentials().AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:4200"));
+            //app.UseCors(x=>x.AllowCredentials().AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:4200"));
+            app.UseCors(x => x
+                .AllowCredentials()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .WithOrigins(frontendUrl)); // Itt már a konfigurációból kapott címet használom
+            app.MapControllers();
             app.Run();
         }
     }
