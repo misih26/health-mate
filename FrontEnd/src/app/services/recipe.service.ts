@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ConfigService } from './config.service';
+
 
 
 @Injectable({
@@ -8,12 +10,20 @@ import { Observable } from 'rxjs';
 })
 export class RecipeService {
 
-  private url="https://localhost:7165/Category"
-  private recipeUrl="https://localhost:7165/Recipe"
-  constructor(private client: HttpClient) { }
 
+  //private recipeUrl = `${environment.apiUrl}/Recipe`;
+  constructor(private client: HttpClient, private configService: ConfigService) { }
+
+  // 3. Dinamikus URL-ek létrehozása
+  private get categoryUrl(): string {
+    return `${this.configService.cfg.apiUrl}/Category`;
+  }
+
+  private get recipeUrl(): string {
+    return `${this.configService.cfg.apiUrl}/Recipe`;
+  }
   getRecipesByCategory(name: string):Observable<any>{
-    return this.client.get(this.url+"/ByName/"+name)
+    return this.client.get(`${this.categoryUrl}/ByName/${name}`)
   }
   getAllRecipes():Observable<any>{
     return this.client.get(this.recipeUrl)
