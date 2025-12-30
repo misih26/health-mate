@@ -76,16 +76,15 @@ namespace health_mate
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            //}
 
             //app.UseHttpsRedirection();
             app.UseDeveloperExceptionPage();
 
-            app.UseAuthorization();
 
 
             
@@ -98,6 +97,9 @@ namespace health_mate
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .WithOrigins(frontendUrl)); // Itt már a konfigurációból kapott címet használom
+
+            app.UseAuthorization();
+
             app.MapControllers();
             app.Run();
         }
