@@ -22,7 +22,7 @@ namespace health_mate
             builder.WebHost.ConfigureKestrel(options =>
             {
                 // Beolvassuk a portot, ha nincs megadva, alapértelmezett a 5000
-                var port = builder.Configuration["settings:port"] ?? "5000";
+                var port = builder.Configuration["settings:port"] ?? "5001";
                 options.ListenAnyIP(int.Parse(port));
             });
 
