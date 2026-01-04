@@ -11,7 +11,6 @@ import { environment } from '../../assets/environments/environment';
 })
 export class RecipeService {
 
-  //private recipeUrl = `${environment.apiUrl}/Recipe`;
   constructor(private client: HttpClient) { }
 
   // 3. Dinamikus URL-ek létrehozása
