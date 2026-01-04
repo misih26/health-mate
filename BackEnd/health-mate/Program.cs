@@ -16,7 +16,7 @@ namespace health_mate
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            //teszt miatt....
+            //teszt miatt.....
             // --- TANÁRI KIEGÉSZÍTÉS: Kestrel port beállítása ---
             // Ez teszi lehetõvé, hogy a szerveren az appsettings.json-ben megadott porton fusson az app.
             builder.WebHost.ConfigureKestrel(options =>
