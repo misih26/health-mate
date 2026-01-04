@@ -8,12 +8,8 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     
-    # GitHub Environment használata a naplózáshoz és változókhoz
-    environment: Production 
-
     env:
       FRONTEND_PATH: "FrontEnd"
-      # Az Nginx által kiszolgált mappa útvonala
       REMOTE_TARGET: "/var/www/healthmate/frontend" 
 
     steps:
@@ -24,10 +20,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: 'FrontEnd/package-lock.json'
 
-      # 1. Éles környezeti fájl generálása
+      # 1. Éles environment.ts generálása
       - name: Generate Production environment.ts
         run: |
           mkdir -p "${{ env.FRONTEND_PATH }}/src/assets/environments"
@@ -38,21 +32,20 @@ jobs:
           };
           EOF
 
-      # 2. Függőségek telepítése és optimalizált Build
+      # 2. Telepítés és Build
       - name: Install and Build
         run: |
           cd "${{ env.FRONTEND_PATH }}"
           npm install
-          # A --configuration production biztosítja a minifikálást és a fájlcserét
           npm run build -- --configuration production
 
-      # 3. SSH kulcs rögzítése a biztonságos híváshoz
+      # 3. SSH kulcs rögzítése
       - name: Add remote host key
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
 
-      # 4. Fájlok feltöltése a webszerverre
+      # 4. Feltöltés a pontos mappából
       - name: Upload to Server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -60,7 +53,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASS }}
-          # Figyelem: Angularnál a dist után még jöhet a projekt neve!
-          source: "${{ env.FRONTEND_PATH }}/dist/**" 
+          # A te build útvonalad: dist/front-end/browser
+          source: "${{ env.FRONTEND_PATH }}/dist/front-end/browser/**" 
           target: "${{ env.REMOTE_TARGET }}"
-          strip_components: 3 # Kiszűri a felesleges mappaszinteket
+          strip_components: 4 # FrontEnd(1)/dist(2)/front-end(3)/browser(4) szintek eldobása
