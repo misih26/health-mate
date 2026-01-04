@@ -1,16 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ConfigService } from './config.service';
+import { environment } from '../../assets/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CategoryService {
-  constructor(private client: HttpClient, private configService: ConfigService) { }
+  constructor(private client: HttpClient) { }
 
-  private get categoryUrl(): string {
-    return `${this.configService.cfg.apiUrl}/Category`;
+ private get categoryUrl(): string {
+    return `${environment.apiUrl}/Category`;
   }
 
   getAllCategory():Observable<any>{
