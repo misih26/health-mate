@@ -36,11 +36,11 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Restore
-        run: dotnet restore ${{ env.PROJECT_PATH }}
+        run: dotnet restore "${{ env.PROJECT_PATH }}"
 
       - name: Publish (Release, Linux)
         run: |
-          dotnet publish ${{ env.PROJECT_PATH }} \
+          dotnet publish "${{ env.PROJECT_PATH }}" \
           -c Release \
           -r ${{ env.RUNTIME }} \
           -p:PublishSingleFile=${{ env.PUBLISH_SINGLE_FILE }} \
