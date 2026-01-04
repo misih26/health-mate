@@ -1,4 +1,4 @@
-name: Deploy Frontend to Develop (Atomic)
+name: Deploy Frontend to Develop (working)
 
 on:
   push:
