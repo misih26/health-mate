@@ -21,7 +21,7 @@ jobs:
       REMOTE_CURRENT: /var/backend/test_healthmate/current
       
       # --- TESZT SPECIFIKUS BEÁLLÍTÁSOK ---
-      SERVICE_NAME: healthmate-test.service # A teszt szerviz neve
+      SERVICE_NAME: healthmatetest.service
       FRONTEND_URL: https://test.healthmate.hu # A teszt frontend címe
       
       SSH_HOST: ${{ secrets.SSH_HOST }}
