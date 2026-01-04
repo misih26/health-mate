@@ -2,14 +2,14 @@ name: Deploy Frontend to Develop (working)
 
 on:
   push:
-    branches: [ "develop" ] # Csak a develop ágon fut le
+    branches: [ "develop" ]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
       FRONTEND_PATH: "FrontEnd"
-      BASE_TARGET: "/var/www/test_healthmate/frontend" # Teszt útvonal
+      BASE_TARGET: "/var/www/test_healthmate/frontend" 
 
     steps:
       - name: Checkout
@@ -34,7 +34,19 @@ jobs:
       - name: Pack build for upload
         run: tar -czf frontend-dev.tar.gz -C FrontEnd/dist/front-end/browser .
 
-      - name: Upload and Atomic Deploy
+      # TÉNYLEGES FELTÖLTÉS A SZERVERRE
+      - name: Upload to Server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASS }}
+          source: "frontend-dev.tar.gz"
+          target: "/tmp/"
+
+      # ATOMI DEPLOYMENT LOGIKA
+      - name: Atomic Deploy on Server
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -42,6 +54,16 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASS }}
           script: |
-            # Feltöltés (itt scp parancsot is használhatsz vagy scp-action-t külön)
-            # ... a Master-nél látott symlinkes logika ide jön a BASE_TARGET útvonalra ...
-            # sudo ln -sfn "$RELEASE_DIR" "${{ env.BASE_TARGET }}/current"
+            set -e
+            RELEASE_DIR="${{ env.BASE_TARGET }}/releases/$(date +%Y%m%d%H%M%S)"
+            sudo mkdir -p "$RELEASE_DIR"
+            
+            # Kicsomagolás az új időbélyeges mappába
+            sudo tar -xzf /tmp/frontend-dev.tar.gz -C "$RELEASE_DIR"
+            
+            # Symlink átállítása (ez teszi élővé az új verziót)
+            sudo ln -sfn "$RELEASE_DIR" "${{ env.BASE_TARGET }}/current"
+            
+            # Takarítás: régi verziók törlése (utolsó 5 marad)
+            cd "${{ env.BASE_TARGET }}/releases" && ls -t | tail -n +6 | xargs -I {} sudo rm -rf "{}"
+            sudo rm /tmp/frontend-dev.tar.gz
