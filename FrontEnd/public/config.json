@@ -1,3 +1,3 @@
 {
-  "apiUrl": "http://test.api.healthmate.hu"
+  "apiUrl": "http://localhost:5001"
 }
