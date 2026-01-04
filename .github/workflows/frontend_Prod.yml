@@ -9,12 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FRONTEND_PATH: "FrontEnd"
+      # Az éles környezet alapmappája
       BASE_TARGET: "/var/www/healthmate/frontend" 
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 1. Éles környezeti változók injektálása
       - name: Generate Production environment.ts
         run: |
           mkdir -p "${{ env.FRONTEND_PATH }}/src/assets/environments"
@@ -24,15 +26,19 @@ jobs:
             apiUrl: 'https://api.healthmate.hu'
           };
           EOF
+
+      # 2. Build folyamat
       - name: Install and Build
         run: |
           cd "${{ env.FRONTEND_PATH }}"
           npm install
           npm run build -- --configuration production
-      # JAVÍTOTT LÉPÉS: Egyetlen parancsal a gyökérbe csomagolunk
+
+      # 3. Csomagolás a feltöltéshez
       - name: Pack build for upload
         run: tar -czf frontend-prod.tar.gz -C FrontEnd/dist/front-end/browser .
 
+      # 4. Feltöltés a szerver átmeneti mappájába
       - name: Upload to Server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -43,6 +49,7 @@ jobs:
           source: "frontend-prod.tar.gz"
           target: "/tmp/"
 
+      # 5. Atomi telepítés és szimbolikus link kezelése
       - name: Atomic Deploy on Server
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -51,14 +58,24 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASS }}
           script: |
-            set -e
+            set -euo pipefail
+            
+            # Alapkönyvtárak biztosítása
+            sudo mkdir -p "${{ env.BASE_TARGET }}/releases"
+            
+            # Új release mappa létrehozása időbélyeggel
             RELEASE_DIR="${{ env.BASE_TARGET }}/releases/$(date +%Y%m%d%H%M%S)"
             sudo mkdir -p "$RELEASE_DIR"
+            
+            # Kicsomagolás az új mappába
             sudo tar -xzf /tmp/frontend-prod.tar.gz -C "$RELEASE_DIR"
             
-            # Szimbolikus link létrehozása/frissítése
+            # Atomi váltás: a 'current' link átállítása az új verzióra
             sudo ln -sfn "$RELEASE_DIR" "${{ env.BASE_TARGET }}/current"
             
-            # Takarítás
+            # Jogosultságok beállítása (Nginx számára)
+            sudo chown -R www-data:www-data "${{ env.BASE_TARGET }}"
+            
+            # Takarítás: csak az utolsó 5 verziót tartjuk meg
             cd "${{ env.BASE_TARGET }}/releases" && ls -t | tail -n +6 | xargs -I {} sudo rm -rf "{}"
             sudo rm /tmp/frontend-prod.tar.gz
