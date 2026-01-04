@@ -1,4 +1,4 @@
-name: Deploy Frontend to Prod (Atomic)
+name: Deploy Frontend to Prod (working)
 
 on:
   push:
