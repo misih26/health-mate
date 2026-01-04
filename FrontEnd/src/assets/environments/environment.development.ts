@@ -1,5 +1,4 @@
 export const environment = {
-  production: false,
-  // A backend terminálodban látható 5000-es portot használjuk
-  apiUrl: 'http://localhost:5000'
+  production: true,
+  apiUrl: 'https://api.healthmate.hu' // Ez lesz az éles cím
 };

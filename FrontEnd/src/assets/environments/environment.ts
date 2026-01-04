@@ -1,5 +1,4 @@
 export const environment = {
-  production: true,
-  // Ide kerül majd a megvásárolt doméned
-  apiUrl: 'https://api.healthmate.hu'
+  production: false,
+  apiUrl: 'http://localhost:5000'
 };
