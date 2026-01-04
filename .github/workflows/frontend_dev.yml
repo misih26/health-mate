@@ -1,0 +1,47 @@
+name: Deploy Frontend to Develop (Atomic)
+
+on:
+  push:
+    branches: [ "develop" ] # Csak a develop ágon fut le
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      FRONTEND_PATH: "FrontEnd"
+      BASE_TARGET: "/var/www/test_healthmate/frontend" # Teszt útvonal
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate Develop environment.ts
+        run: |
+          mkdir -p "${{ env.FRONTEND_PATH }}/src/assets/environments"
+          cat <<EOF > "${{ env.FRONTEND_PATH }}/src/assets/environments/environment.ts"
+          export const environment = {
+            production: false,
+            apiUrl: 'https://test.api.healthmate.hu'
+          };
+          EOF
+
+      - name: Install and Build
+        run: |
+          cd "${{ env.FRONTEND_PATH }}"
+          npm install
+          npm run build -- --configuration production
+
+      - name: Pack build for upload
+        run: tar -czf frontend-dev.tar.gz -C FrontEnd/dist/front-end/browser .
+
+      - name: Upload and Atomic Deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASS }}
+          script: |
+            # Feltöltés (itt scp parancsot is használhatsz vagy scp-action-t külön)
+            # ... a Master-nél látott symlinkes logika ide jön a BASE_TARGET útvonalra ...
+            # sudo ln -sfn "$RELEASE_DIR" "${{ env.BASE_TARGET }}/current"
