@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FRONTEND_PATH: "FrontEnd"
-      # A szerveren lévő alapmappa
       BASE_TARGET: "/var/www/healthmate/frontend" 
 
     steps:
@@ -32,11 +31,9 @@ jobs:
           npm install
           npm run build -- --configuration production
 
+      # JAVÍTOTT LÉPÉS: Egyetlen parancsal a gyökérbe csomagolunk
       - name: Pack build for upload
-        run: |
-          # A te build útvonalad alapján: dist/front-end/browser
-          cd "${{ env.FRONTEND_PATH }}/dist/front-end/browser"
-          tar -czf ../../../frontend-prod.tar.gz .
+        run: tar -czf frontend-prod.tar.gz -C FrontEnd/dist/front-end/browser .
 
       - name: Upload to Server
         uses: appleboy/scp-action@v0.1.7
@@ -61,9 +58,9 @@ jobs:
             sudo mkdir -p "$RELEASE_DIR"
             sudo tar -xzf /tmp/frontend-prod.tar.gz -C "$RELEASE_DIR"
             
-            # Szimbolikus link átállítása a "current" mappára
+            # Szimbolikus link létrehozása/frissítése
             sudo ln -sfn "$RELEASE_DIR" "${{ env.BASE_TARGET }}/current"
             
-            # Régi verziók takarítása (utolsó 5 marad)
+            # Takarítás
             cd "${{ env.BASE_TARGET }}/releases" && ls -t | tail -n +6 | xargs -I {} sudo rm -rf "{}"
             sudo rm /tmp/frontend-prod.tar.gz
