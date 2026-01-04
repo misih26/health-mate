@@ -1,4 +1,4 @@
-name: Deploy Frontend to Prod
+name: Deploy Frontend to Prod (Atomic)
 
 on:
   push:
@@ -7,21 +7,15 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
     env:
       FRONTEND_PATH: "FrontEnd"
-      REMOTE_TARGET: "/var/www/healthmate/frontend" 
+      # A szerveren lévő alapmappa
+      BASE_TARGET: "/var/www/healthmate/frontend" 
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      # 1. Éles environment.ts generálása
       - name: Generate Production environment.ts
         run: |
           mkdir -p "${{ env.FRONTEND_PATH }}/src/assets/environments"
@@ -32,20 +26,18 @@ jobs:
           };
           EOF
 
-      # 2. Telepítés és Build
       - name: Install and Build
         run: |
           cd "${{ env.FRONTEND_PATH }}"
           npm install
           npm run build -- --configuration production
 
-      # 3. SSH kulcs rögzítése
-      - name: Add remote host key
+      - name: Pack build for upload
         run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          # A te build útvonalad alapján: dist/front-end/browser
+          cd "${{ env.FRONTEND_PATH }}/dist/front-end/browser"
+          tar -czf ../../../frontend-prod.tar.gz .
 
-      # 4. Feltöltés a pontos mappából
       - name: Upload to Server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -53,7 +45,25 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASS }}
-          # A te build útvonalad: dist/front-end/browser
-          source: "${{ env.FRONTEND_PATH }}/dist/front-end/browser/**" 
-          target: "${{ env.REMOTE_TARGET }}"
-          strip_components: 4 # FrontEnd(1)/dist(2)/front-end(3)/browser(4) szintek eldobása
+          source: "frontend-prod.tar.gz"
+          target: "/tmp/"
+
+      - name: Atomic Deploy on Server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASS }}
+          script: |
+            set -e
+            RELEASE_DIR="${{ env.BASE_TARGET }}/releases/$(date +%Y%m%d%H%M%S)"
+            sudo mkdir -p "$RELEASE_DIR"
+            sudo tar -xzf /tmp/frontend-prod.tar.gz -C "$RELEASE_DIR"
+            
+            # Szimbolikus link átállítása a "current" mappára
+            sudo ln -sfn "$RELEASE_DIR" "${{ env.BASE_TARGET }}/current"
+            
+            # Régi verziók takarítása (utolsó 5 marad)
+            cd "${{ env.BASE_TARGET }}/releases" && ls -t | tail -n +6 | xargs -I {} sudo rm -rf "{}"
+            sudo rm /tmp/frontend-prod.tar.gz
